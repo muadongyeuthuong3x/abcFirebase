@@ -13,7 +13,6 @@ import {
   import React, { useEffect, useState } from 'react';
   const ListUser = ({ route,  navigation }) => {
     const data = route.params;
-    console.log(data.data)
     const [search, setSearch] = React.useState();
     const [listUser, setlistUser] = React.useState();
     const getAllUser = async () => {
@@ -32,14 +31,22 @@ import {
   
     }, []);
   
-    const navigateItemChat = ()=>{
-      navigation.navigate('Messengers');
+    const navigateItemChat = (item)=>{
+      const {avatar , uid , name} = item
+      const dataMessenger = {
+        avatarFriend : avatar ,
+        uidFriend : uid ,
+        nameFriend: name,
+        uidYou :data.data
+      }
+      console.log(item)
+      navigation.navigate('ItemChat' ,dataMessenger);
     }
   
     const renderItem = ({ item ,index }) => {
       return (
         <View key={index}  >
-          <TouchableOpacity onPress={navigateItemChat} style={styles.itemchat}>
+          <TouchableOpacity onPress={navigateItemChat(item)} style={styles.itemchat}>
             <Image
               style={styles.tinyLogo}
               source={{

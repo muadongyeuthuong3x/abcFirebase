@@ -5,6 +5,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer } from '@react-navigation/native';
 import SignInScreen from "./screen/Login"
 import TabBottom from "./navigate/tabBottom"
+import ItemChat from "./screen/ItemChat"
 const Stack = createNativeStackNavigator();
 const firebaseConfig = {
   apiKey: "AIzaSyBZkh8nkvgcv6HUWCftIJPkuSZANMvlVLU",
@@ -28,6 +29,7 @@ export default function App() {
       }}>
        <Stack.Screen name="SignIn" component={SignInScreen} />
        <Stack.Screen name="ListUser" component={TabBottom} /> 
+       <Stack.Screen name="ItemChat" component={ItemChat} />
       </Stack.Navigator>
     </NavigationContainer>
   );
