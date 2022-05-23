@@ -22,30 +22,29 @@ const ItemChat = ({ route, navigation }) => {
     const [message, setMessage] = React.useState('');
     const [allChat, setAllChat] = React.useState('');
     const renderItem = ({ item, index }) => {
-        console.log(item)
         return (
             <View style={styles.paddingChat}>
                 {(item.from !== data.uid) ? (
 
 
                     <View style={styles.friendChat}>
-                        <Text style={styles.textChat}>Toidddddddddddddddddddđ chat</Text>
-                        <Image
+                        <Text style={styles.textChat}>{item.message}</Text>
+                        {/* <Image
                             style={styles.imgSend}
                             source={{
                                 uri: "https://scontent.fhan5-8.fna.fbcdn.net/v/t1.6435-1/158318801_2929199107401517_2132058612256104388_n.jpg?stp=dst-jpg_s320x320&_nc_cat=110&ccb=1-6&_nc_sid=7206a8&_nc_ohc=L3xeVY3L3YgAX-hiOaU&_nc_ht=scontent.fhan5-8.fna&oh=00_AT8BzZwAy6FEflLBZD25ii9imVKQ-MIsVCw1L_ezfL4BJQ&oe=62A9381C"
                             }}
-                        />
+                        /> */}
                     </View>
                 ) : (
                     <View style={styles.rightUser}>
-                        <Text style={styles.meChat}>Toi dddddddddddddddddddddddddddddddddddddddddchat</Text>
-                        <Image
+                        <Text style={styles.meChat}>{item.message}</Text>
+                        {/* <Image
                             style={styles.imgSendYou}
                             source={{
                                 uri: "https://scontent.fhan5-8.fna.fbcdn.net/v/t1.6435-1/158318801_2929199107401517_2132058612256104388_n.jpg?stp=dst-jpg_s320x320&_nc_cat=110&ccb=1-6&_nc_sid=7206a8&_nc_ohc=L3xeVY3L3YgAX-hiOaU&_nc_ht=scontent.fhan5-8.fna&oh=00_AT8BzZwAy6FEflLBZD25ii9imVKQ-MIsVCw1L_ezfL4BJQ&oe=62A9381C"
                             }}
-                        />
+                        /> */}
                     </View>)}
             </View>
         )
@@ -55,7 +54,6 @@ const ItemChat = ({ route, navigation }) => {
     }
 
     const sendMessenger = () => {
-        console.log(data)
         const msgData = {
             roomId: data.idRoom,
             message: message,
@@ -94,14 +92,12 @@ const ItemChat = ({ route, navigation }) => {
     }
 
     React.useEffect(() => {
-        console.log(data.idRoom)
         const onChildAdd = database()
             .ref('/messages/' + data.idRoom)
             .on('child_added', snapshot => {
-                // console.log('A new node has been added', snapshot.val());
+                console.log('A new node has been added', snapshot.val());
                 setAllChat((state) => [snapshot.val(), ...state]);
             });
-        console.log(allChat)
         // Stop listening for updates when no longer required
         return () => database().ref('/messages' + data.idRoom).off('child_added', onChildAdd);
     }, [data.idRoom]);
@@ -134,8 +130,10 @@ const ItemChat = ({ route, navigation }) => {
             </View>
 
             <FlatList
+                style = {styles.chatBottom}
                 showsVerticalScrollIndicator={false}
                 data={allChat}
+                inverted
                 renderItem={renderItem}
                 keyExtractor={item => item.uid}
             />
@@ -299,6 +297,9 @@ const styles = StyleSheet.create({
     },
     messengerChat: {
         flex: 1
+    },
+    chatBottom:{
+        marginBottom: 60
     }
 
 })
