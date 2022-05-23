@@ -14,7 +14,6 @@ import {
   import uuid from 'react-native-uuid';
   const ListUserChat = ({ route,  navigation }) => {
     const data = route.params.data;
-    console.log(data)
     const [search, setSearch] = React.useState();
     const [chatList  , setchatList] = useState('')
     const getChatList = async ()=>{
@@ -33,7 +32,6 @@ import {
     },[]);
 
     const navigateItemChat = (item)=>{
-      console.log(item)
      const dataSend = {
          idRoom : item.roomId,
          idYou : data.uid,

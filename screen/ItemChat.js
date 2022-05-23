@@ -20,27 +20,33 @@ const ItemChat = ({ route, navigation }) => {
 
     const data = route.params;
     const [message, setMessage] = React.useState('');
+    const [allChat, setAllChat] = React.useState('');
     const renderItem = ({ item, index }) => {
+        console.log(item)
         return (
             <View style={styles.paddingChat}>
-                <View style={styles.friendChat}>
-                    <Text style={styles.textChat}>Toidddddddddddddddddddđ chat</Text>
-                    <Image
-                        style={styles.imgSend}
-                        source={{
-                            uri: "https://scontent.fhan5-8.fna.fbcdn.net/v/t1.6435-1/158318801_2929199107401517_2132058612256104388_n.jpg?stp=dst-jpg_s320x320&_nc_cat=110&ccb=1-6&_nc_sid=7206a8&_nc_ohc=L3xeVY3L3YgAX-hiOaU&_nc_ht=scontent.fhan5-8.fna&oh=00_AT8BzZwAy6FEflLBZD25ii9imVKQ-MIsVCw1L_ezfL4BJQ&oe=62A9381C"
-                        }}
-                    />
-                </View>
-                <View style={styles.rightUser}>
-                    <Text style={styles.meChat}>Toi dddddddddddddddddddddddddddddddddddddddddchat</Text>
-                    <Image
-                        style={styles.imgSendYou}
-                        source={{
-                            uri: "https://scontent.fhan5-8.fna.fbcdn.net/v/t1.6435-1/158318801_2929199107401517_2132058612256104388_n.jpg?stp=dst-jpg_s320x320&_nc_cat=110&ccb=1-6&_nc_sid=7206a8&_nc_ohc=L3xeVY3L3YgAX-hiOaU&_nc_ht=scontent.fhan5-8.fna&oh=00_AT8BzZwAy6FEflLBZD25ii9imVKQ-MIsVCw1L_ezfL4BJQ&oe=62A9381C"
-                        }}
-                    />
-                </View>
+                {(item.from !== data.uid) ? (
+
+
+                    <View style={styles.friendChat}>
+                        <Text style={styles.textChat}>Toidddddddddddddddddddđ chat</Text>
+                        <Image
+                            style={styles.imgSend}
+                            source={{
+                                uri: "https://scontent.fhan5-8.fna.fbcdn.net/v/t1.6435-1/158318801_2929199107401517_2132058612256104388_n.jpg?stp=dst-jpg_s320x320&_nc_cat=110&ccb=1-6&_nc_sid=7206a8&_nc_ohc=L3xeVY3L3YgAX-hiOaU&_nc_ht=scontent.fhan5-8.fna&oh=00_AT8BzZwAy6FEflLBZD25ii9imVKQ-MIsVCw1L_ezfL4BJQ&oe=62A9381C"
+                            }}
+                        />
+                    </View>
+                ) : (
+                    <View style={styles.rightUser}>
+                        <Text style={styles.meChat}>Toi dddddddddddddddddddddddddddddddddddddddddchat</Text>
+                        <Image
+                            style={styles.imgSendYou}
+                            source={{
+                                uri: "https://scontent.fhan5-8.fna.fbcdn.net/v/t1.6435-1/158318801_2929199107401517_2132058612256104388_n.jpg?stp=dst-jpg_s320x320&_nc_cat=110&ccb=1-6&_nc_sid=7206a8&_nc_ohc=L3xeVY3L3YgAX-hiOaU&_nc_ht=scontent.fhan5-8.fna&oh=00_AT8BzZwAy6FEflLBZD25ii9imVKQ-MIsVCw1L_ezfL4BJQ&oe=62A9381C"
+                            }}
+                        />
+                    </View>)}
             </View>
         )
     }
@@ -64,29 +70,44 @@ const ItemChat = ({ route, navigation }) => {
             .push();
 
         msgData.id = newReference.key;
-        newReference.set(msgData).then(() =>{
-        const chatListupdate = {
-            lastMsg: message,
-            sendTime: msgData.sendTime,
-        }
-        console.log(data.idFriend + '/' + data.idYou)
-        console.log(msgData)
+        newReference.set(msgData).then(() => {
+            const chatListupdate = {
+                lastMsg: message,
+                sendTime: msgData.sendTime,
+            }
+
             database()
                 .ref('/chatlist/' + data.idFriend + '/' + data.idYou)
                 .update(chatListupdate)
                 .then(() => console.log('Data updated.'));
-               
-                database()
+
+            database()
                 .ref('/chatlist/' + data.idYou + '/' + data.idFriend)
                 .update(chatListupdate)
                 .then(() => console.log('Data updated.'));
-                 
-                setMessage('')
 
-    }).catch(err => {
-                    console.log("error")
-                })
+            setMessage('')
+
+        }).catch(err => {
+            console.log("error")
+        })
     }
+
+    React.useEffect(() => {
+        console.log(data.idRoom)
+        const onChildAdd = database()
+            .ref('/messages/' + data.idRoom)
+            .on('child_added', snapshot => {
+                // console.log('A new node has been added', snapshot.val());
+                setAllChat((state) => [snapshot.val(), ...state]);
+            });
+        console.log(allChat)
+        // Stop listening for updates when no longer required
+        return () => database().ref('/messages' + data.idRoom).off('child_added', onChildAdd);
+    }, [data.idRoom]);
+
+
+
     return (
 
         <View style={styles.messengerChat}>
@@ -114,7 +135,7 @@ const ItemChat = ({ route, navigation }) => {
 
             <FlatList
                 showsVerticalScrollIndicator={false}
-                data={[1, 2, 3]}
+                data={allChat}
                 renderItem={renderItem}
                 keyExtractor={item => item.uid}
             />
@@ -130,6 +151,7 @@ const ItemChat = ({ route, navigation }) => {
                         style={styles.input}
                         placeholder="messenger ...."
                         multiline={true}
+                        value={message}
                         onChangeText={onChangeTextMessenger}
                     />
                     <View>
