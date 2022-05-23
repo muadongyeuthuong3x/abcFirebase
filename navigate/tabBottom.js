@@ -5,11 +5,12 @@ import { StyleSheet, View } from "react-native";
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 // import ItemUserChat from '../Screen/ItemUserChat'
-
+import  ListUserChat from '../screen/ListUserChat'
+import Profile from "../screen/Profile"
 const Tab = createBottomTabNavigator();
 
 function TabBottom({ route, navigation}) {
-  const { data } = route.params;
+  const { data } = route?.params;
   return (
     <Tab.Navigator
       tabBarOptions={{
@@ -43,8 +44,25 @@ function TabBottom({ route, navigation}) {
           )
         }}
       />
-   
-      {/* <Tab.Screen name="setting" component={ItemUserChat} 
+
+      <Tab.Screen name="UserChat"
+        component={ ListUserChat}
+        initialParams={{data:data}}
+        navigation={navigation}
+        options={{
+          tabBarIcon: ({ focused }) => (
+            <View style={styles.user}>
+              <FontAwesome
+                name="user"
+                color={focused ?"#0969da":"#373c41c4"}
+                size={20}
+              />
+            </View>
+          )
+        }}
+      />
+  
+      <Tab.Screen name="setting" component={Profile} 
          options={{
           tabBarIcon: ({ focused }) => (
             <View style={styles.user}>
@@ -55,7 +73,7 @@ function TabBottom({ route, navigation}) {
               />
             </View>
           )
-        }} /> */}
+        }} />
     </Tab.Navigator>
   );
 }
