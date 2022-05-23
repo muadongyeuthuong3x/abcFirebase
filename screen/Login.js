@@ -11,6 +11,7 @@ import {
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import LinearGradient from 'react-native-linear-gradient';
 import auth from '@react-native-firebase/auth';
+import {signIn} from './../firebase/firebase'
 import database from '@react-native-firebase/database';
 import SimpleToast from 'react-native-simple-toast';
 
@@ -25,7 +26,7 @@ const SignInScreen = ({ navigation }) => {
             .signInWithEmailAndPassword(email,password)
             .then((res) => {
                 navigation.navigate('ListUser' , {
-                 data: res.user.uid
+                 data: res.user
                 });
             })
             .catch(error => {

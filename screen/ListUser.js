@@ -1,52 +1,84 @@
 import {
-    View,
-    StyleSheet,
-    TextInput,
-    Image,
-    FlatList,
-    Text,
-    TouchableOpacity
-  } from 'react-native';
-  import database from '@react-native-firebase/database';
-  import FontAwesome from 'react-native-vector-icons/FontAwesome';
-  import { Dimensions } from 'react-native';
-  import React, { useEffect, useState } from 'react';
-  const ListUser = ({ route,  navigation }) => {
-    const data = route.params;
-    const [search, setSearch] = React.useState();
-    const [listUser, setlistUser] = React.useState();
-    const getAllUser = async () => {
-      database()
-        .ref('users/')
-        .once('value')
-        .then(snapshot => {
-          setlistUser(
-            Object.values(snapshot.val()).filter(it => it.uid != data.data),
-          );
-        });
+  View,
+  StyleSheet,
+  TextInput,
+  Image,
+  FlatList,
+  Text,
+  TouchableOpacity
+} from 'react-native';
+import database from '@react-native-firebase/database';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import { Dimensions } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import uuid from 'react-native-uuid';
+const ListUser = ({ route, navigation }) => {
+  const data = route.params.data;
+  const [search, setSearch] = React.useState();
+  const [listUser, setlistUser] = React.useState();
+  const [you, setYou] = React.useState('');
+  const getAllUser = async () => {
+    database()
+      .ref('users/')
+      .once('value')
+      .then(snapshot => {
+        setlistUser(
+          Object.values(snapshot.val()).filter(it => it.uid != data?.uid),
+        );
+        setYou(
+          Object.values(snapshot.val()).filter(it => it.uid === data?.uid),
+        )
+      });
+
+  };
+  useEffect(() => {
+    getAllUser()
+
+  }, []);
+
+  const navigateItemChat = (item) => {
+
+    database()
+      .ref('/chatlist/' + data.uid + '/' + item.uid)
+      .once('value')
+      .then(snapshot => {
+        console.log('User data: ', snapshot.val());
+        if (snapshot.val() == null) {
+          let roomId = uuid.v4();
+
+          const { avatar, uid, name } = item
+          const dataMessenger = {
+            roomId,
+            name: you[0]?.name,
+            img: you[0]?.avatar,
+            email: you[0]?.email,
+            lastMsg: ''
+          }
+          database()
+            .ref('/chatlist/' + uid + '/' + you[0]?.uid)
+            .update(dataMessenger)
+            .then(() => console.log('Data updated.'));
+          item.lastMsg = '',
+          item.roomId = roomId;
+          database()
+            .ref('/chatlist/' + you[0]?.uid + '/' + uid)
+            .update(item)
+            .then(() => console.log('Data updated.'));
+           
+            item.lastMsg = '';
+            item.roomId = roomId;
+
+          navigation.navigate('ItemChat', item);
+        } else {
+          navigation.navigate('ItemChat',snapshot.val());
+        }
+      });
+  };
   
-    };
-    useEffect(() => {
-      getAllUser()
-  
-    }, []);
-  
-    const navigateItemChat = (item)=>{
-      const {avatar , uid , name} = item
-      const dataMessenger = {
-        avatarFriend : avatar ,
-        uidFriend : uid ,
-        nameFriend: name,
-        uidYou :data.data
-      }
-      console.log(item)
-      navigation.navigate('ItemChat' ,dataMessenger);
-    }
-  
-    const renderItem = ({ item ,index }) => {
+    const renderItem = ({ item, index }) => {
       return (
         <View key={index}  >
-          <TouchableOpacity onPress={navigateItemChat(item)} style={styles.itemchat}>
+          <TouchableOpacity onPress={() => navigateItemChat(item)} style={styles.itemchat}>
             <Image
               style={styles.tinyLogo}
               source={{
@@ -55,11 +87,11 @@ import {
             />
             <View style={styles.itemchatRight}>
               <View><Text style={styles.name}> {item?.name}</Text></View>
-  
-              <View style={styles.contentnd}>
+
+              {/* <View style={styles.contentnd}>
                 <Text style={styles.contentchat}>Text chat</Text>
                 <Text style={styles.contentchat}> . 19:20</Text>
-              </View>
+              </View> */}
             </View>
           </TouchableOpacity>
         </View>
@@ -78,7 +110,7 @@ import {
             placeholder="Tìm kiếm thành viên"
             value={search}
           />
-  
+
         </View>
         <FlatList
           showsVerticalScrollIndicator={false}
@@ -102,9 +134,9 @@ import {
       borderColor: '#DCDCDC',
       position: "relative",
       alignContent: 'center',
-      alignItems:'center',
+      alignItems: 'center',
       textAlign: 'center',
-  
+
     },
     tinyLogo: {
       width: 80,
@@ -120,8 +152,8 @@ import {
       marginBottom: 10,
       backgroundColor: "#fff",
       padding: 10,
-  
-  
+
+
     },
     itemchatRight: {
       marginLeft: 10,
@@ -131,7 +163,7 @@ import {
       textAlign: 'center',
       position: 'absolute',
       padding: 10,
-      zIndex:10,
+      zIndex: 10,
       margin: 12,
     },
     name: {

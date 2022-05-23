@@ -9,17 +9,17 @@ import {
     KeyboardAvoidingView
 } from 'react-native';
 import { Dimensions } from 'react-native';
+import database from '@react-native-firebase/database';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import React from 'react';
+import moment from 'moment';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
-const ItemChat = ({ route , navigation }) => {
-    
-    const data = route.params;
-    console.log(data)
+const ItemChat = ({ route, navigation }) => {
 
-     const [message, setMessage] = React.useState('');
+    const data = route.params;
+    const [message, setMessage] = React.useState('');
     const renderItem = ({ item, index }) => {
         return (
             <View style={styles.paddingChat}>
@@ -44,12 +44,48 @@ const ItemChat = ({ route , navigation }) => {
             </View>
         )
     }
-    const onChangeTextMessenger = (e)=>{
+    const onChangeTextMessenger = (e) => {
         setMessage(e)
     }
-   
-    const sendMessenger = ()=>{
-        
+
+    const sendMessenger = () => {
+        console.log(data)
+        const msgData = {
+            roomId: data.idRoom,
+            message: message,
+            from: data.idYou,
+            to: data.idFriend,
+            sendTime: moment().format(),
+            msgType: 'text'
+        }
+
+        const newReference = database()
+            .ref('/messages/' + data.idRoom)
+            .push();
+
+        msgData.id = newReference.key;
+        newReference.set(msgData).then(() =>{
+        const chatListupdate = {
+            lastMsg: message,
+            sendTime: msgData.sendTime,
+        }
+        console.log(data.idFriend + '/' + data.idYou)
+        console.log(msgData)
+            database()
+                .ref('/chatlist/' + data.idFriend + '/' + data.idYou)
+                .update(chatListupdate)
+                .then(() => console.log('Data updated.'));
+               
+                database()
+                .ref('/chatlist/' + data.idYou + '/' + data.idFriend)
+                .update(chatListupdate)
+                .then(() => console.log('Data updated.'));
+                 
+                setMessage('')
+
+    }).catch(err => {
+                    console.log("error")
+                })
     }
     return (
 
@@ -65,7 +101,7 @@ const ItemChat = ({ route , navigation }) => {
                             }}
                         />
                         <View style={styles.contentAvatar}>
-                            <Text style={styles.name}>{data.nameFriend}</Text>
+                            <Text style={styles.name}>{data?.nameFriend}</Text>
                             <Text style={styles.timeOnline}>Hoat dong 45p</Text>
                         </View>
                     </View>
@@ -78,7 +114,7 @@ const ItemChat = ({ route , navigation }) => {
 
             <FlatList
                 showsVerticalScrollIndicator={false}
-                data={[1,2,3]}
+                data={[1, 2, 3]}
                 renderItem={renderItem}
                 keyExtractor={item => item.uid}
             />
@@ -96,13 +132,17 @@ const ItemChat = ({ route , navigation }) => {
                         multiline={true}
                         onChangeText={onChangeTextMessenger}
                     />
-                    <TouchableOpacity onPress={sendMessenger}> 
-                    <Icon
-                        name="paper-plane"
-                        style={styles.iconSend}
-                        size={20}
-                    />
-                    </TouchableOpacity>
+                    <View>
+                        <TouchableOpacity onPress={() => sendMessenger()}>
+                            <Icon
+                                onPress={() => sendMessenger()}
+                                name="paper-plane"
+                                style={styles.iconSend}
+                                size={20}
+                            />
+
+                        </TouchableOpacity>
+                    </View>
                 </KeyboardAvoidingView>
             </View>
 
@@ -220,7 +260,8 @@ const styles = StyleSheet.create({
     iconSend: {
         color: "#8BB451",
         marginTop: 2,
-        marginLeft: 10
+        marginLeft: 10,
+        padding: 10
     },
     iconImage: {
         color: "#8BB451",
@@ -231,7 +272,7 @@ const styles = StyleSheet.create({
         position: "absolute",
         bottom: 0,
         flex: 1,
-        backgroundColor:"#ffff"
+        backgroundColor: "#ffff"
 
     },
     messengerChat: {
