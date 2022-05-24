@@ -24,10 +24,16 @@ const ItemChat = ({ route, navigation }) => {
     const renderItem = ({ item, index }) => {
         return (
             <View style={styles.paddingChat}>
-                {(item.from !== data.uid) ? (
+                {(item.to === data.uid) ? (
 
 
                     <View style={styles.friendChat}>
+                         <Image
+                            style={styles.imgChat}
+                            source={{
+                                uri: data.avatarFriend
+                            }}
+                        />
                         <Text style={styles.textChat}>{item.message}</Text>
                         {/* <Image
                             style={styles.imgSend}
@@ -188,6 +194,11 @@ const styles = StyleSheet.create({
         paddingVertical: 5
 
     },
+    imgChat:{
+     width:50,
+     height:50,
+     borderRadius:25
+    }, 
     iconAvatar: {
         flexDirection: 'row'
     },
@@ -248,7 +259,8 @@ const styles = StyleSheet.create({
         padding: 20,
         borderRadius: 40,
         marginBottom: 10,
-        marginTop: 10
+        marginTop: 10,
+        maxWidth:150
     },
     meChat: {
         fontSize: 20,
@@ -261,7 +273,8 @@ const styles = StyleSheet.create({
         marginTop: 10
     },
     friendChat: {
-        width: 3 * (Dimensions.get('window').width) / 4,
+        maxWidth: 3 * (Dimensions.get('window').width) / 4,
+        flexDirection: 'row'
     },
     rightUser: {
         marginLeft: 1 * (Dimensions.get('window').width) / 4,

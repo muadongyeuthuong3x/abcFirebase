@@ -11,7 +11,6 @@ import {
   import FontAwesome from 'react-native-vector-icons/FontAwesome';
   import { Dimensions } from 'react-native';
   import React, { useEffect, useState } from 'react';
-  import uuid from 'react-native-uuid';
   const ListUserChat = ({ route,  navigation }) => {
     const data = route.params.data;
     const [search, setSearch] = React.useState();
@@ -30,14 +29,14 @@ import {
     useEffect(()=>{
      getChatList()
     },[]);
-
+     console.log(chatList)
     const navigateItemChat = (item)=>{
      const dataSend = {
          idRoom : item.roomId,
          idYou : data.uid,
          idFriend : item.uid,
          nameFriend: item.name,
-         avatarFriend:item.img
+         avatarFriend:item.avatar
 
      }
      navigation.navigate('ItemChat' ,dataSend);
@@ -50,7 +49,7 @@ import {
             <Image
               style={styles.tinyLogo}
               source={{
-                uri: item.img
+                uri: item.avatar
               }}
             />
             <View style={styles.itemchatRight}>
