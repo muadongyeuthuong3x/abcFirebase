@@ -10,6 +10,7 @@ import {
   import database from '@react-native-firebase/database';
   import FontAwesome from 'react-native-vector-icons/FontAwesome';
   import { Dimensions } from 'react-native';
+  import moment from 'moment';
   import React, { useEffect, useState } from 'react';
   const ListUserChat = ({ route,  navigation }) => {
     const data = route.params.data;
@@ -57,7 +58,7 @@ import {
   
               <View style={styles.contentnd}>
                 <Text style={styles.contentchat}>{item.lastMsg}</Text>
-                <Text style={styles.contentchat}> . 19:20</Text>
+                <Text style={styles.contentchat}> .20:00</Text>
               </View>
             </View>
           </TouchableOpacity>
