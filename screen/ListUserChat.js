@@ -10,8 +10,8 @@ import {
   import database from '@react-native-firebase/database';
   import FontAwesome from 'react-native-vector-icons/FontAwesome';
   import { Dimensions } from 'react-native';
+  import moment from 'moment';
   import React, { useEffect, useState } from 'react';
-  import uuid from 'react-native-uuid';
   const ListUserChat = ({ route,  navigation }) => {
     const data = route.params.data;
     const [search, setSearch] = React.useState();
@@ -30,14 +30,14 @@ import {
     useEffect(()=>{
      getChatList()
     },[]);
-
+     console.log(chatList)
     const navigateItemChat = (item)=>{
      const dataSend = {
          idRoom : item.roomId,
          idYou : data.uid,
          idFriend : item.uid,
          nameFriend: item.name,
-         avatarFriend:item.img
+         avatarFriend:item.avatar
 
      }
      navigation.navigate('ItemChat' ,dataSend);
@@ -50,7 +50,7 @@ import {
             <Image
               style={styles.tinyLogo}
               source={{
-                uri: item.img
+                uri: item.avatar
               }}
             />
             <View style={styles.itemchatRight}>
@@ -58,7 +58,7 @@ import {
   
               <View style={styles.contentnd}>
                 <Text style={styles.contentchat}>{item.lastMsg}</Text>
-                <Text style={styles.contentchat}> . 19:20</Text>
+                <Text style={styles.contentchat}> .20:00</Text>
               </View>
             </View>
           </TouchableOpacity>
