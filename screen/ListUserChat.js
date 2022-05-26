@@ -30,7 +30,6 @@ import {
     useEffect(()=>{
      getChatList()
     },[]);
-     console.log(chatList)
     const navigateItemChat = (item)=>{
      const dataSend = {
          idRoom : item.roomId,

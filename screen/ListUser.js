@@ -37,14 +37,12 @@ const ListUser = ({ route, navigation }) => {
   }, []);
 
   const navigateItemChat = (item) => {
-
     database()
       .ref('/chatlist/' + data.uid + '/' + item.uid)
       .once('value')
       .then(snapshot => {
         if (snapshot.val() == null) {
           let roomId = uuid.v4();
-
           const { avatar, uid, name } = item
           const dataMessenger = {
             roomId,
@@ -87,10 +85,10 @@ const ListUser = ({ route, navigation }) => {
           <View style={styles.itemchatRight}>
             <View><Text style={styles.name}> {item?.name}</Text></View>
 
-            {/* <View style={styles.contentnd}>
-                <Text style={styles.contentchat}>Text chat</Text>
-                <Text style={styles.contentchat}> . 19:20</Text>
-              </View> */}
+            <View style={styles.contentnd}>
+                <Text style={styles.xemtt}> Xem thông tin </Text>
+                <Text style={styles.chat}> Chat </Text>
+              </View>
           </View>
         </TouchableOpacity>
       </View>
@@ -175,8 +173,14 @@ const styles = StyleSheet.create({
     fontSize: 15,
     marginTop: 2
   },
+  xemtt:{
+    color: 'green'
+  },
   contentnd: {
     flexDirection: "row",
     justifyContent: "space-around"
+  },
+  chat:{
+    color: 'blue'
   }
 });

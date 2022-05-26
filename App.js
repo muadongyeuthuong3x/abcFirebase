@@ -11,6 +11,7 @@ import { onAuthStateChanged } from "@react-native-firebase/auth";
 import ContextWrapper from './context/ContextWrapper'
 import auth from '@react-native-firebase/auth';
 import firestore, { firebase } from '@react-native-firebase/firestore';
+import '@react-native-firebase/firestore';
 const Stack = createNativeStackNavigator();
 if (!firebase.apps.length) {
   firebase.initializeApp({
@@ -24,38 +25,25 @@ if (!firebase.apps.length) {
     measurementId: "277423826521"
   })
 }
-else {
-  firebase.app().firestore()
-}
+// firebase.app().firestore()
+
 
 
 export default function App() {
-  const [currUser, setCurrUser] = React.useState(null);
-  const [loading, setLoading] = React.useState(true);
-  React.useEffect(() => {
-    const unsubscribe = auth().onAuthStateChanged((user) => {
-      setLoading(false);
-      if (user) {
-        setCurrUser(user);
-      }
-    });
-    return () => unsubscribe();
-  }, []);
-  if (loading) {
-    return <Text>Loading...</Text>;
-  }
+
+  
   return (
     <ContextWrapper>
       <NavigationContainer>
         <Stack.Navigator screenOptions={{ headerShown: false }}>
 
-          <Stack.Screen name="SignIn" component={SignInScreen} />
+          {/* <Stack.Screen name="SignIn" component={SignInScreen} />
 
           <React.Fragment>
             <Stack.Screen name="ListUser" component={TabBottom} />
-            <Stack.Screen name="ItemChat" component={ItemChat} />
+            <Stack.Screen name="ItemChat" component={ItemChat} /> */}
             <Stack.Screen name="Profile" component={Profile} />
-          </React.Fragment>
+          {/* </React.Fragment> */}
 
         </Stack.Navigator>
       </NavigationContainer>

@@ -1343,10 +1343,15 @@
   resolved "https://registry.yarnpkg.com/@react-native-firebase/database/-/database-14.9.4.tgz#8b3c6a7d4cd039e597e920a91436125dcb4436d0"
   integrity sha512-lrNzTuSEBM2cigY1WnqEIwJpyfFxf508sprgWwEe/T3+hoNWY77AOkSCtZGUsms2quGXDiSyQZGicZ3bDBqY9g==
 
-"@react-native-firebase/firestore@^14.9.4":
+"@react-native-firebase/firestore@^14.8.0":
   version "14.9.4"
   resolved "https://registry.yarnpkg.com/@react-native-firebase/firestore/-/firestore-14.9.4.tgz#e31f06998a160c6d3c655f03153b5fdba5ac16f4"
   integrity sha512-vojJskuLx70FyPboeD9wIJ3KNAq25aW2RkKEYu/WJ0r4eg2/CCDGsjEeN8vBooUbUW6VC1+cEpXKA3Q++Sna4w==
+
+"@react-native-firebase/storage@^14.9.4":
+  version "14.9.4"
+  resolved "https://registry.yarnpkg.com/@react-native-firebase/storage/-/storage-14.9.4.tgz#21c6cf53a54b6d45d7d27f01800deb5ad3e04796"
+  integrity sha512-Qvlnftov2pdlu6+FwXeI+3Y3iDwUJNdR5wu5QTZFWJM1gKvUG532jTuu9ZHzD6JdnsnPvnnrWEPhLHTzaTZ7pQ==
 
 "@react-native/assets@1.0.0":
   version "1.0.0"
@@ -5872,6 +5877,11 @@ react-native-gradle-plugin@^0.0.6:
   version "0.0.6"
   resolved "https://registry.yarnpkg.com/react-native-gradle-plugin/-/react-native-gradle-plugin-0.0.6.tgz#b61a9234ad2f61430937911003cddd7e15c72b45"
   integrity sha512-eIlgtsmDp1jLC24dRn43hB3kEcZVqx6DUQbR0N1ABXGnMEafm9I3V3dUUeD1vh+Dy5WqijSoEwLNUPLgu5zDMg==
+
+react-native-image-crop-picker@^0.37.3:
+  version "0.37.3"
+  resolved "https://registry.yarnpkg.com/react-native-image-crop-picker/-/react-native-image-crop-picker-0.37.3.tgz#f260e40b6a6ba8e98f4db3dde25a8f09e0936385"
+  integrity sha512-ih+0pWWRUNEFQyaHwGbH9rqJNOb7EBYMwKJhTY0VmsKIA9E+usfwMmQXAFIfOnee7fTn0A2vOXkBCPQZwyvnQw==
 
 react-native-image-picker@^4.8.3:
   version "4.8.3"

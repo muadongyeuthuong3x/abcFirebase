@@ -6,13 +6,15 @@ import {
     Image,
     FlatList,
     Text,
-    KeyboardAvoidingView
+    KeyboardAvoidingView,
+    Keyboard 
 } from 'react-native';
 import { Dimensions } from 'react-native';
 import database from '@react-native-firebase/database';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import React from 'react';
+import ImageCropPicker from 'react-native-image-crop-picker';
 import moment from 'moment';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
@@ -79,14 +81,14 @@ const ItemChat = ({ route, navigation }) => {
                 lastMsg: message,
                 sendTime: msgData.sendTime,
             }
-
+     console.log(data.idFriend + '/' + data.idYou)
             database()
-                .ref('/chatlist/' + data.idFriend + '/' + data.idYou)
+                .ref('/chatlist/' + data?.idFriend + '/' + data?.idYou)
                 .update(chatListupdate)
                 .then(() => console.log('Data updated.'));
 
             database()
-                .ref('/chatlist/' + data.idYou + '/' + data.idFriend)
+                .ref('/chatlist/' + data?.idYou + '/' + data?.idFriend)
                 .update(chatListupdate)
                 .then(() => console.log('Data updated.'));
 
@@ -101,7 +103,6 @@ const ItemChat = ({ route, navigation }) => {
         const onChildAdd = database()
             .ref('/messages/' + data.idRoom)
             .on('child_added', snapshot => {
-                console.log('A new node has been added', snapshot.val());
                 setAllChat((state) => [snapshot.val(), ...state]);
             });
         // Stop listening for updates when no longer required
@@ -154,7 +155,7 @@ const ItemChat = ({ route, navigation }) => {
                     <TextInput
                         style={styles.input}
                         placeholder="messenger ...."
-                        multiline={true}
+                        accessible={false}
                         value={message}
                         onChangeText={onChangeTextMessenger}
                     />
@@ -265,11 +266,11 @@ const styles = StyleSheet.create({
     meChat: {
         fontSize: 20,
         fontWeight: "600",
-        color: "black",
-        backgroundColor: '#17a2b8',
-        padding: 20,
+        color: "white",
+        backgroundColor: '#2982f7',
+        padding: 10,
         borderRadius: 40,
-        marginBottom: 10,
+         marginBottom: 10,
         marginTop: 10
     },
     friendChat: {
