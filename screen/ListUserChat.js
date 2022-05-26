@@ -42,6 +42,8 @@ import {
      navigation.navigate('ItemChat' ,dataSend);
     }
    
+
+    
     const renderItem = ({ item ,index }) => {
       return (
         <View key={index}  >
@@ -56,8 +58,8 @@ import {
               <View><Text style={styles.name}> {item?.name}</Text></View>
   
               <View style={styles.contentnd}>
-                <Text style={styles.contentchat}>{item.lastMsg}</Text>
-                <Text style={styles.contentchat}> .20:00</Text>
+                <Text style={styles.itemChat}>{(item.lastMsg).slice(0,10).concat("...")}</Text>
+                <Text style={styles.contentchat}>{moment(item.sendTime).format('MM/DD/YYYY HH:ss')}</Text>
               </View>
             </View>
           </TouchableOpacity>
@@ -146,5 +148,11 @@ import {
     contentnd: {
       flexDirection: "row",
       justifyContent: "space-around"
+    },
+    itemChat:{
+      color: '#009385',
+      fontSize: 15,
+      marginTop: 2,
+      marginRight: 10
     }
   });

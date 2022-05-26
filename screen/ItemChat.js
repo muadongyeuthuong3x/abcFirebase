@@ -7,7 +7,7 @@ import {
     FlatList,
     Text,
     KeyboardAvoidingView,
-    Keyboard 
+    Keyboard
 } from 'react-native';
 import { Dimensions } from 'react-native';
 import database from '@react-native-firebase/database';
@@ -17,13 +17,23 @@ import React from 'react';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import moment from 'moment';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { firebase } from '@react-native-firebase/storage';
+import { firebase, getDownloadURL } from '@react-native-firebase/storage';
 
 const ItemChat = ({ route, navigation }) => {
 
     const data = route.params;
     const [message, setMessage] = React.useState('');
     const [allChat, setAllChat] = React.useState('');
+    const [urlBe, setUrlBE] = React.useState('');
+    const urlImageFirebase = async (data) => {
+        const url = firebase.storage().ref(data)
+        const datas = await getDownloadURL(url)
+        console.log("image")
+        console.log(datas)
+        return datas
+        //  return  datas
+    }
+
     const renderItem = ({ item, index }) => {
         return (
             <View style={styles.paddingChat}>
@@ -37,30 +47,26 @@ const ItemChat = ({ route, navigation }) => {
                                 uri: data.avatarFriend
                             }}
                         />{
-                            item.msgType === 'text'?
-                        
-                        <Text style={styles.textChat}>{item.message}</Text>:
-                         <Image
-                            style={styles.imgSend}
-                            source={{
-                                uri: "https://scontent.fhan5-8.fna.fbcdn.net/v/t1.6435-1/158318801_2929199107401517_2132058612256104388_n.jpg?stp=dst-jpg_s320x320&_nc_cat=110&ccb=1-6&_nc_sid=7206a8&_nc_ohc=L3xeVY3L3YgAX-hiOaU&_nc_ht=scontent.fhan5-8.fna&oh=00_AT8BzZwAy6FEflLBZD25ii9imVKQ-MIsVCw1L_ezfL4BJQ&oe=62A9381C"
-                            }}
-                            
-                        />
-                    }
+                            item.msgType === 'text' ?
+
+                                <Text style={styles.textChat}>{item.message}</Text> :
+                                <Image
+                                    style={styles.imgSend}
+                                    source={{uri: item.message !=="" ? item.message : undefined }}
+
+                                />
+                        }
                     </View>
                 ) : (
                     <View style={styles.rightUser}>
                         {
-                            item.msgType === 'text'?
-                        
-                        <Text style={styles.textChat}>{item.message}</Text>:
-                         <Image
-                            style={styles.imgSendYou}
-                            source={{
-                                uri: "https://scontent.fhan5-8.fna.fbcdn.net/v/t1.6435-1/158318801_2929199107401517_2132058612256104388_n.jpg?stp=dst-jpg_s320x320&_nc_cat=110&ccb=1-6&_nc_sid=7206a8&_nc_ohc=L3xeVY3L3YgAX-hiOaU&_nc_ht=scontent.fhan5-8.fna&oh=00_AT8BzZwAy6FEflLBZD25ii9imVKQ-MIsVCw1L_ezfL4BJQ&oe=62A9381C"
-                            }}
-                        /> }
+                            item.msgType === 'text' ?
+
+                                <Text style={styles.textChat}>{item.message}</Text> :
+                                <Image
+                                    style={styles.imgSendYou}
+                                    source={{uri: item.message !=="" ? item.message : undefined }}
+                                />}
                     </View>)}
             </View>
         )
@@ -139,18 +145,21 @@ const ItemChat = ({ route, navigation }) => {
             } else {
                 setImagePicker(response.assets[0].uri)
                 const urlName = response.assets[0].uri.substring(response.assets[0].uri.lastIndexOf('/') + 1)
-                 nameTime = new Date().getTime() + urlName
-                // let reference = storage().ref(urlName);
-                console.log(urlName)
-                 reference = firebase.storage().ref(nameTime)
-                
+                nameTime = new Date().getTime() + urlName
+                reference = firebase.storage().ref(nameTime)
+
             }
         })
-         await reference.putFile(urlImage);
 
-         const msgData = {
+        await reference.putFile(urlImage);
+        const refsss = firebase.storage().ref(nameTime);
+        const dataImage = await refsss.getDownloadURL()
+            .then(url => { setUrlBE(url) })
+            .catch(e => { console.log(e); })
+
+        const msgData = {
             roomId: data.idRoom,
-            message: nameTime,
+            message: urlBe,
             from: data.idYou,
             to: data.idFriend,
             sendTime: moment().format(),
@@ -160,30 +169,33 @@ const ItemChat = ({ route, navigation }) => {
         const newReference = database()
             .ref('/messages/' + data.idRoom)
             .push();
-            msgData.id = newReference.key;
-            msgData.id = newReference.key;
-            newReference.set(msgData).then(() => {
-                const chatListupdate = {
-                    lastMsg: message,
-                    sendTime: msgData.sendTime,
-                }
-                database()
-                    .ref('/chatlist/' + data?.idFriend + '/' + data?.idYou)
-                    .update(chatListupdate)
-                    .then(() => console.log('Data updated.'));
-    
-                database()
-                    .ref('/chatlist/' + data?.idYou + '/' + data?.idFriend)
-                    .update(chatListupdate)
-                    .then(() => console.log('Data updated.'));
-    
-                setMessage('')
-    
-            }).catch(err => {
-                console.log("error")
-            })
+        msgData.id = newReference.key;
+        msgData.id = newReference.key;
+        newReference.set(msgData).then(() => {
+            const chatListupdate = {
+                lastMsg: message,
+                sendTime: msgData.sendTime,
+            }
+            database()
+                .ref('/chatlist/' + data?.idFriend + '/' + data?.idYou)
+                .update(chatListupdate)
+                .then(() => console.log('Data updated.'));
+
+            database()
+                .ref('/chatlist/' + data?.idYou + '/' + data?.idFriend)
+                .update(chatListupdate)
+                .then(() => console.log('Data updated.'));
+
+            setMessage('')
+
+        }).catch(err => {
+            console.log("error")
+        })
 
     }
+
+
+
 
 
     return (
