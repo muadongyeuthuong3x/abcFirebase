@@ -37,13 +37,13 @@ export default function App() {
       <NavigationContainer>
         <Stack.Navigator screenOptions={{ headerShown: false }}>
 
-          {/* <Stack.Screen name="SignIn" component={SignInScreen} />
+          <Stack.Screen name="SignIn" component={SignInScreen} />
 
           <React.Fragment>
             <Stack.Screen name="ListUser" component={TabBottom} />
-            <Stack.Screen name="ItemChat" component={ItemChat} /> */}
+            <Stack.Screen name="ItemChat" component={ItemChat} />
             <Stack.Screen name="Profile" component={Profile} />
-          {/* </React.Fragment> */}
+          </React.Fragment>
 
         </Stack.Navigator>
       </NavigationContainer>

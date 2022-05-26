@@ -14,9 +14,10 @@ import database from '@react-native-firebase/database';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import React from 'react';
-import ImageCropPicker from 'react-native-image-crop-picker';
+import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import moment from 'moment';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import { firebase } from '@react-native-firebase/storage';
 
 const ItemChat = ({ route, navigation }) => {
 
@@ -30,29 +31,36 @@ const ItemChat = ({ route, navigation }) => {
 
 
                     <View style={styles.friendChat}>
-                         <Image
+                        <Image
                             style={styles.imgChat}
                             source={{
                                 uri: data.avatarFriend
                             }}
-                        />
-                        <Text style={styles.textChat}>{item.message}</Text>
-                        {/* <Image
+                        />{
+                            item.msgType === 'text'?
+                        
+                        <Text style={styles.textChat}>{item.message}</Text>:
+                         <Image
                             style={styles.imgSend}
                             source={{
                                 uri: "https://scontent.fhan5-8.fna.fbcdn.net/v/t1.6435-1/158318801_2929199107401517_2132058612256104388_n.jpg?stp=dst-jpg_s320x320&_nc_cat=110&ccb=1-6&_nc_sid=7206a8&_nc_ohc=L3xeVY3L3YgAX-hiOaU&_nc_ht=scontent.fhan5-8.fna&oh=00_AT8BzZwAy6FEflLBZD25ii9imVKQ-MIsVCw1L_ezfL4BJQ&oe=62A9381C"
                             }}
-                        /> */}
+                            
+                        />
+                    }
                     </View>
                 ) : (
                     <View style={styles.rightUser}>
-                        <Text style={styles.meChat}>{item.message}</Text>
-                        {/* <Image
+                        {
+                            item.msgType === 'text'?
+                        
+                        <Text style={styles.textChat}>{item.message}</Text>:
+                         <Image
                             style={styles.imgSendYou}
                             source={{
                                 uri: "https://scontent.fhan5-8.fna.fbcdn.net/v/t1.6435-1/158318801_2929199107401517_2132058612256104388_n.jpg?stp=dst-jpg_s320x320&_nc_cat=110&ccb=1-6&_nc_sid=7206a8&_nc_ohc=L3xeVY3L3YgAX-hiOaU&_nc_ht=scontent.fhan5-8.fna&oh=00_AT8BzZwAy6FEflLBZD25ii9imVKQ-MIsVCw1L_ezfL4BJQ&oe=62A9381C"
                             }}
-                        /> */}
+                        /> }
                     </View>)}
             </View>
         )
@@ -81,7 +89,6 @@ const ItemChat = ({ route, navigation }) => {
                 lastMsg: message,
                 sendTime: msgData.sendTime,
             }
-     console.log(data.idFriend + '/' + data.idYou)
             database()
                 .ref('/chatlist/' + data?.idFriend + '/' + data?.idYou)
                 .update(chatListupdate)
@@ -108,7 +115,75 @@ const ItemChat = ({ route, navigation }) => {
         // Stop listening for updates when no longer required
         return () => database().ref('/messages' + data.idRoom).off('child_added', onChildAdd);
     }, [data.idRoom]);
+    const [urlImage, setImagePicker] = React.useState('')
+    const imageUpload = async () => {
+        let options = {
+            mediaType: 'photo',
+            quality: 1,
+            storageOptions: {
+                skipBackup: true,
+                path: 'images'
+            }
+        }
+        let reference = ''
+        let nameTime = ''
+        await launchImageLibrary(options, response => {
+            if (response.didCancel) {
+                console.log("canel image selection")
+            } else if (response.errorCode === 'others') {
+                console.log('permission nit satidfield')
+            } else if (response.errorCode === 'permission') {
+                console.log('permission nit satidfield')
+            } else if (response.assets[0].fileSize > 2097152) {
+                console.log("max file")
+            } else {
+                setImagePicker(response.assets[0].uri)
+                const urlName = response.assets[0].uri.substring(response.assets[0].uri.lastIndexOf('/') + 1)
+                 nameTime = new Date().getTime() + urlName
+                // let reference = storage().ref(urlName);
+                console.log(urlName)
+                 reference = firebase.storage().ref(nameTime)
+                
+            }
+        })
+         await reference.putFile(urlImage);
 
+         const msgData = {
+            roomId: data.idRoom,
+            message: nameTime,
+            from: data.idYou,
+            to: data.idFriend,
+            sendTime: moment().format(),
+            msgType: 'image'
+        }
+
+        const newReference = database()
+            .ref('/messages/' + data.idRoom)
+            .push();
+            msgData.id = newReference.key;
+            msgData.id = newReference.key;
+            newReference.set(msgData).then(() => {
+                const chatListupdate = {
+                    lastMsg: message,
+                    sendTime: msgData.sendTime,
+                }
+                database()
+                    .ref('/chatlist/' + data?.idFriend + '/' + data?.idYou)
+                    .update(chatListupdate)
+                    .then(() => console.log('Data updated.'));
+    
+                database()
+                    .ref('/chatlist/' + data?.idYou + '/' + data?.idFriend)
+                    .update(chatListupdate)
+                    .then(() => console.log('Data updated.'));
+    
+                setMessage('')
+    
+            }).catch(err => {
+                console.log("error")
+            })
+
+    }
 
 
     return (
@@ -137,7 +212,7 @@ const ItemChat = ({ route, navigation }) => {
             </View>
 
             <FlatList
-                style = {styles.chatBottom}
+                style={styles.chatBottom}
                 showsVerticalScrollIndicator={false}
                 data={allChat}
                 inverted
@@ -147,11 +222,14 @@ const ItemChat = ({ route, navigation }) => {
 
             <View style={styles.viewInputChat}>
                 <KeyboardAvoidingView style={styles.formChat}>
-                    <Icon
-                        name="image"
-                        style={styles.iconImage}
-                        size={25}
-                    />
+                    <TouchableOpacity onPress={imageUpload}>
+                        <Icon
+                            name="image"
+                            style={styles.iconImage}
+                            size={25}
+                            onPress={imageUpload}
+                        />
+                    </TouchableOpacity>
                     <TextInput
                         style={styles.input}
                         placeholder="messenger ...."
@@ -195,11 +273,11 @@ const styles = StyleSheet.create({
         paddingVertical: 5
 
     },
-    imgChat:{
-     width:50,
-     height:50,
-     borderRadius:25
-    }, 
+    imgChat: {
+        width: 50,
+        height: 50,
+        borderRadius: 25
+    },
     iconAvatar: {
         flexDirection: 'row'
     },
@@ -261,7 +339,7 @@ const styles = StyleSheet.create({
         borderRadius: 40,
         marginBottom: 10,
         marginTop: 10,
-        maxWidth:150
+        maxWidth: 150
     },
     meChat: {
         fontSize: 20,
@@ -270,7 +348,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#2982f7',
         padding: 10,
         borderRadius: 40,
-         marginBottom: 10,
+        marginBottom: 10,
         marginTop: 10
     },
     friendChat: {
@@ -312,7 +390,7 @@ const styles = StyleSheet.create({
     messengerChat: {
         flex: 1
     },
-    chatBottom:{
+    chatBottom: {
         marginBottom: 60
     }
 

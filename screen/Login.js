@@ -57,10 +57,11 @@ const SignInScreen = ({ navigation }) => {
     //      const data = {
     //          email,
     //          uid,
-    //          name:"Thu heo heo",
+    //          name:"Mạnh cường",
+    //          word: "Tester",
+    //          birday:"26/01/1999",
     //          avatar: "https://scontent.fhan5-9.fna.fbcdn.net/v/t39.30808-1/281596605_1018527299059547_2699710644885802828_n.jpg?stp=dst-jpg_p320x320&_nc_cat=109&ccb=1-7&_nc_sid=7206a8&_nc_ohc=eBQa_tqCEL0AX_0sYo9&_nc_ht=scontent.fhan5-9.fna&oh=00_AT8oPXZUYO7QtX7RvygRJZWcDKLcvmxG9145qSetpMdEKA&oe=628B2C9D"
     //      }
-
     //      database()
     //     .ref('/users/'+data.uid)
     //     .set( data)
@@ -81,7 +82,7 @@ const SignInScreen = ({ navigation }) => {
 
 
 
-    //}
+    // }
     return (
         <View style={styles.container}>
             <StatusBar backgroundColor="#009387" barStyle="light-content" />
