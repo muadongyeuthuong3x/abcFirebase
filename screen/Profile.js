@@ -3,32 +3,36 @@ import {
     StyleSheet,
     TextInput,
     Image,
-    FlatList,
+    Platform,
     Text,
     TouchableOpacity
 } from 'react-native';
-import database from '@react-native-firebase/database';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import LinearGradient from 'react-native-linear-gradient';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
+import ImagePicker from 'react-native-image-crop-picker';
 import { utils } from '@react-native-firebase/app';
-import { getStorage, ref, uploadBytes } from "@react-native-firebase/firestore";
-import storage from '@react-native-firebase/firestore';
-
-import { Dimensions } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import { firebase } from '@react-native-firebase/storage';
+import React  from 'react';
 
 const Profile = () => {
     const [urlImage, setImagePicker] = React.useState('')
     const [imageSource, setImageSource] = React.useState('')
+    // const storage = getStorage();
     const imageUpload = async () => {
+        // ImagePicker.openCamera({
+        //     width: 300,
+        //     height: 400,
+        //     cropping: true,
+        //   }).then(image => {
+        //     console.log(image);
+        //   });
         let options = {
             mediaType: 'photo',
             quality: 1,
             storageOptions: {
                 skipBackup: true,
                 path: 'images'
-              }
+            }
         }
         await launchImageLibrary(options, response => {
             if (response.didCancel) {
@@ -48,13 +52,23 @@ const Profile = () => {
     }
 
     const sendProfile = async () => {
-        const urlName = urlImage.substring(urlImage.lastIndexOf('/') + 1)
-        const reference = storage().ref(urlName);
-        const pathToFile = `${utils.FilePath.PICTURES_DIRECTORY}/${urlName}`;
-        await reference.putFile(pathToFile);
-      
+        console.log("AAAA")
+         const urlName = urlImage.substring(urlImage.lastIndexOf('/') + 1)
+        // let reference = storage().ref(urlName);       
+        const reference =  firebase.storage().ref(urlName)
+        let task = await reference.putFile(urlImage);       
+          console.log(task)
 
-
+        // const imagesRef = ref(storage, 'images');
+       
+       
+        // const uploadUri = Platform.OS === 'ios' ? urlImage.replace('file://', '') : urlImage
+        // const spaceRef = ref(storage, urlName);
+        // const reference =await  storage().ref(urlName).putFile(urlImage);
+        // const metadata = {
+        //     contentType: 'image/jpeg',
+        //   };
+        // uploadBytes(spaceRef , file, metadata);  
 
     }
     return (

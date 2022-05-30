@@ -8,6 +8,7 @@ import {
     TouchableOpacity
   } from 'react-native';
   import database from '@react-native-firebase/database';
+  import firestore from '@react-native-firebase/firestore';
   import FontAwesome from 'react-native-vector-icons/FontAwesome';
   import { Dimensions } from 'react-native';
   import moment from 'moment';
@@ -17,20 +18,21 @@ import {
     const [search, setSearch] = React.useState();
     const [chatList  , setchatList] = useState('')
     const getChatList = async ()=>{
-        database()
-    .ref('/chatlist/'+data?.uid)
-    .on('value', snapshot => {
+    //     database()
+    // .ref('/chatlist/'+data?.uid)
+    // .on('value', snapshot => {
    
-      if (snapshot.val() != null) {
-        setchatList(Object.values(snapshot.val()))
+    //   if (snapshot.val() != null) {
+    //     setchatList(Object.values(snapshot.val()))
 
-      }
-    });
+    //   }
+    // });
+   const datass =   database().collection('chatlist').doc(data.idInformationFriend)
+    console.log(datass)
     }
     useEffect(()=>{
      getChatList()
     },[]);
-     console.log(chatList)
     const navigateItemChat = (item)=>{
      const dataSend = {
          idRoom : item.roomId,
@@ -43,6 +45,8 @@ import {
      navigation.navigate('ItemChat' ,dataSend);
     }
    
+
+    
     const renderItem = ({ item ,index }) => {
       return (
         <View key={index}  >
@@ -57,8 +61,8 @@ import {
               <View><Text style={styles.name}> {item?.name}</Text></View>
   
               <View style={styles.contentnd}>
-                <Text style={styles.contentchat}>{item.lastMsg}</Text>
-                <Text style={styles.contentchat}> .20:00</Text>
+                <Text style={styles.itemChat}>{(item.lastMsg).slice(0,10).concat("...")}</Text>
+                <Text style={styles.contentchat}>{moment(item.sendTime).format('MM/DD/YYYY HH:ss')}</Text>
               </View>
             </View>
           </TouchableOpacity>
@@ -147,5 +151,11 @@ import {
     contentnd: {
       flexDirection: "row",
       justifyContent: "space-around"
+    },
+    itemChat:{
+      color: '#009385',
+      fontSize: 15,
+      marginTop: 2,
+      marginRight: 10
     }
   });
