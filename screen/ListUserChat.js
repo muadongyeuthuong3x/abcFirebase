@@ -8,6 +8,7 @@ import {
     TouchableOpacity
   } from 'react-native';
   import database from '@react-native-firebase/database';
+  import firestore from '@react-native-firebase/firestore';
   import FontAwesome from 'react-native-vector-icons/FontAwesome';
   import { Dimensions } from 'react-native';
   import moment from 'moment';
@@ -17,15 +18,17 @@ import {
     const [search, setSearch] = React.useState();
     const [chatList  , setchatList] = useState('')
     const getChatList = async ()=>{
-        database()
-    .ref('/chatlist/'+data?.uid)
-    .on('value', snapshot => {
+    //     database()
+    // .ref('/chatlist/'+data?.uid)
+    // .on('value', snapshot => {
    
-      if (snapshot.val() != null) {
-        setchatList(Object.values(snapshot.val()))
+    //   if (snapshot.val() != null) {
+    //     setchatList(Object.values(snapshot.val()))
 
-      }
-    });
+    //   }
+    // });
+   const datass =   database().collection('chatlist').doc(data.idInformationFriend)
+    console.log(datass)
     }
     useEffect(()=>{
      getChatList()

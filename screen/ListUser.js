@@ -9,27 +9,31 @@ import {
 } from 'react-native';
 import database from '@react-native-firebase/database';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import firestore from '@react-native-firebase/firestore';
 import { Dimensions } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import uuid from 'react-native-uuid';
 const ListUser = ({ route, navigation }) => {
   const data = route.params.data;
   const [search, setSearch] = React.useState();
-  const [listUser, setlistUser] = React.useState();
+  const [listUser, setlistUser] = React.useState([]);
   const [you, setYou] = React.useState('');
+   let dataPush = []
   const getAllUser = async () => {
-    database()
-      .ref('users/')
-      .once('value')
-      .then(snapshot => {
-        setlistUser(
-          Object.values(snapshot.val()).filter(it => it.uid != data?.uid),
-        );
-        setYou(
-          Object.values(snapshot.val()).filter(it => it.uid === data?.uid),
-        )
+   await firestore()
+      .collection('users')
+      .get()
+      .then(querySnapshot => {
+        querySnapshot.forEach(snapshot => {
+          let item = snapshot.data();
+          if(data.email !== item.email){
+            dataPush.push(item);
+          }else {
+            setYou(item)
+          }    
+      })
+      setlistUser(dataPush)
       });
-
   };
   useEffect(() => {
     getAllUser()
@@ -46,51 +50,58 @@ const ListUser = ({ route, navigation }) => {
           const { avatar, uid, name } = item
           const dataMessenger = {
             roomId,
-            name: you[0]?.name,
-            img: you[0]?.avatar,
-            email: you[0]?.email,
-            lastMsg: ''
+            idInformationYou: data.uid,
+            idInformationFriend: item.uid,
+            lastMsg: '',
           }
+
+          const dataMessengerSend = {
+            roomId,
+            idInformationYou: item.uid,
+            idInformationFriend: data.uid,
+            lastMsg: '',
+
+          }
+          firestore().collection('chatlist').add(dataMessengerSend)
+
           database()
             .ref('/chatlist/' + uid + '/' + you[0]?.uid)
-            .update(dataMessenger)
+            .update(dataMessengerSend)
             .then(() => console.log('Data updated.'));
-          item.lastMsg = '',
-            item.roomId = roomId;
+
+
+
           database()
             .ref('/chatlist/' + you[0]?.uid + '/' + uid)
-            .update(item)
+            .update(dataMessenger)
             .then(() => console.log('Data updated.'));
-
-          item.lastMsg = '';
-          item.roomId = roomId;
-
-          navigation.navigate('ItemChat',  item);
+          navigation.navigate('ItemChat', dataMessenger);
         } else {
-          navigation.navigate('ItemChat',  snapshot.val());
+          navigation.navigate('ItemChat', snapshot.val());
         }
       });
   };
 
   const renderItem = ({ item, index }) => {
+    console.log(item.avatar)
     return (
-      <View key={index}  >
-        <TouchableOpacity onPress={() => navigateItemChat(item)} style={styles.itemchat}>
+      <View key={index}  style={styles.itemchat}>
           <Image
             style={styles.tinyLogo}
             source={{
-              uri: item.avatar
+              uri: `${item.avatar}`
             }}
           />
           <View style={styles.itemchatRight}>
             <View><Text style={styles.name}> {item?.name}</Text></View>
 
             <View style={styles.contentnd}>
-                <Text style={styles.xemtt}> Xem thông tin </Text>
-                <Text style={styles.chat}> Chat </Text>
-              </View>
+              <Text style={styles.xemtt}> Xem thông tin </Text>
+              <TouchableOpacity onPress={() => navigateItemChat(item)}>
+              <Text style={styles.chat}> Chat </Text>
+              </TouchableOpacity>
+            </View>
           </View>
-        </TouchableOpacity>
       </View>
     )
   }
@@ -173,14 +184,14 @@ const styles = StyleSheet.create({
     fontSize: 15,
     marginTop: 2
   },
-  xemtt:{
+  xemtt: {
     color: 'green'
   },
   contentnd: {
     flexDirection: "row",
     justifyContent: "space-around"
   },
-  chat:{
+  chat: {
     color: 'blue'
   }
 });

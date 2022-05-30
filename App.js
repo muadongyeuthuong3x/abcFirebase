@@ -11,6 +11,7 @@ import { onAuthStateChanged } from "@react-native-firebase/auth";
 import ContextWrapper from './context/ContextWrapper'
 import auth from '@react-native-firebase/auth';
 import firestore, { firebase } from '@react-native-firebase/firestore';
+import VideoCall from './screen/VideoCall';
 import '@react-native-firebase/firestore';
 const Stack = createNativeStackNavigator();
 if (!firebase.apps.length) {
@@ -44,6 +45,8 @@ export default function App() {
             <Stack.Screen name="ItemChat" component={ItemChat} />
             <Stack.Screen name="Profile" component={Profile} />
           </React.Fragment>
+         
+         <Stack.Screen name="callVideo" component={VideoCall} />
 
         </Stack.Navigator>
       </NavigationContainer>
